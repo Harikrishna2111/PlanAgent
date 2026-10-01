@@ -1,0 +1,15 @@
+{
+  "requirements_path": "output\\requirements.json",
+  "spatial_graph_path": "output\\spatial_graph.png",
+  "before_path": "output\\floor_plan_before.png",
+  "before_score": 0.9391666666666667,
+  "all_candidates_path": "output\\all_candidates.png",
+  "after_score": 0.9697619047619048,
+  "improvement": 0.03059523809523812,
+  "violations_before": 1,
+  "violations_after": 0,
+  "after_path": "output\\floor_plan_after.png",
+  "comparison_path": "output\\comparison.png",
+  "history_path": "output\\optimization_history.png",
+  "elapsed_seconds": 1.54
+}

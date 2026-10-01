@@ -1,0 +1,85 @@
+{
+  "plot_width": 40.0,
+  "plot_height": 60.0,
+  "rooms": [
+    {
+      "name": "Living Room",
+      "room_type": "living_room",
+      "min_width": 12,
+      "min_height": 14,
+      "preferred_area": 200
+    },
+    {
+      "name": "Dining",
+      "room_type": "dining",
+      "min_width": 8,
+      "min_height": 10,
+      "preferred_area": 100
+    },
+    {
+      "name": "Bedroom 1",
+      "room_type": "bedroom",
+      "min_width": 10,
+      "min_height": 12,
+      "preferred_area": 150
+    },
+    {
+      "name": "Bedroom 2",
+      "room_type": "bedroom",
+      "min_width": 10,
+      "min_height": 12,
+      "preferred_area": 150
+    },
+    {
+      "name": "Bathroom 1",
+      "room_type": "bathroom",
+      "min_width": 5,
+      "min_height": 7,
+      "preferred_area": 40
+    },
+    {
+      "name": "Bathroom 2",
+      "room_type": "bathroom",
+      "min_width": 5,
+      "min_height": 7,
+      "preferred_area": 40
+    },
+    {
+      "name": "Kitchen",
+      "room_type": "kitchen",
+      "min_width": 8,
+      "min_height": 10,
+      "preferred_area": 100
+    },
+    {
+      "name": "Entrance",
+      "room_type": "entrance",
+      "min_width": 4,
+      "min_height": 5,
+      "preferred_area": 25
+    }
+  ],
+  "relationships": [
+    {
+      "room_a": "Dining",
+      "room_b": "Kitchen",
+      "relationship": "near"
+    },
+    {
+      "room_a": "Bedroom 1",
+      "room_b": "Bathroom 1",
+      "relationship": "near"
+    },
+    {
+      "room_a": "Bedroom 2",
+      "room_b": "Bathroom 2",
+      "relationship": "near"
+    },
+    {
+      "room_a": "Living Room",
+      "room_b": "Entrance",
+      "relationship": "connected_to"
+    }
+  ],
+  "raw_input": "Design a 2BHK house on a 40 \u00d7 60 ft plot with two bedrooms, two bathrooms, kitchen, living room and dining area. The kitchen should be near the dining area, bedrooms should be close to bathrooms, and the entrance should connect to the living room."
+}
