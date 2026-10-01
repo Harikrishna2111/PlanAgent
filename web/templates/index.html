@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlanAgent — AI Architectural Design Framework</title>
+    <meta name="description" content="Agentic AI Framework for Constraint-Aware Architectural Design — Transform natural language into optimized floor plans.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- Particle Canvas Background -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Ambient Gradient Orbs -->
+    <div class="ambient-bg">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="orb orb-4"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-brand">
+            <div class="brand-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M3 21h18M3 7v1a3 3 0 003 3h12a3 3 0 003-3V7M6 21V11M18 21V11M12 21V11M3 7l9-4 9 4"/>
+                </svg>
+            </div>
+            <span class="brand-text">PlanAgent</span>
+            <span class="brand-badge">AI Framework</span>
+        </div>
+        <div class="nav-links" id="nav-links">
+            <a href="#input-section" class="nav-link active" data-section="input-section">Design</a>
+            <a href="#results-section" class="nav-link" data-section="results-section">Results</a>
+            <a href="#about-section" class="nav-link" data-section="about-section">About</a>
+        </div>
+        <button class="nav-mobile-toggle" id="mobile-toggle" aria-label="Toggle navigation" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="input-section">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="pulse-dot"></span>
+                Agentic AI Framework
+            </div>
+            <h1 class="hero-title">
+                Constraint-Aware<br>
+                <span class="gradient-text animated-gradient">Architectural Design</span>
+            </h1>
+            <p class="hero-subtitle">
+                Transform natural language requirements into optimized floor plans through
+                multi-agent spatial reasoning, constraint evaluation, and iterative optimization.
+            </p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span class="hero-stat-value">5</span>
+                    <span class="hero-stat-label">AI Agents</span>
+                </div>
+                <div class="hero-stat-divider"></div>
+                <div class="hero-stat">
+                    <span class="hero-stat-value">8</span>
+                    <span class="hero-stat-label">Scoring Dimensions</span>
+                </div>
+                <div class="hero-stat-divider"></div>
+                <div class="hero-stat">
+                    <span class="hero-stat-value">∞</span>
+                    <span class="hero-stat-label">Design Possibilities</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pipeline Flow Indicator -->
+    <section class="pipeline-flow">
+        <div class="flow-container">
+            <div class="flow-step" data-step="1">
+                <div class="step-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                </div>
+                <span class="step-label">Requirement<br>Agent</span>
+                <div class="step-pulse"></div>
+            </div>
+            <div class="flow-connector"><div class="connector-line"></div></div>
+            <div class="flow-step" data-step="2">
+                <div class="step-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                </div>
+                <span class="step-label">Spatial<br>Graph</span>
+                <div class="step-pulse"></div>
+            </div>
+            <div class="flow-connector"><div class="connector-line"></div></div>
+            <div class="flow-step" data-step="3">
+                <div class="step-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                </div>
+                <span class="step-label">Floor-Plan<br>Generation</span>
+                <div class="step-pulse"></div>
+            </div>
+            <div class="flow-connector"><div class="connector-line"></div></div>
+            <div class="flow-step" data-step="4">
+                <div class="step-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                </div>
+                <span class="step-label">Spatial<br>Critic</span>
+                <div class="step-pulse"></div>
+            </div>
+            <div class="flow-connector"><div class="connector-line"></div></div>
+            <div class="flow-step" data-step="5">
+                <div class="step-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </div>
+                <span class="step-label">Optimization<br>Agent</span>
+                <div class="step-pulse"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Input Section -->
+    <section class="input-section">
+        <div class="container">
+            <div class="input-card glass-card">
+                <div class="card-header">
+                    <div class="card-header-left">
+                        <h2>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="24" height="24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            Architectural Brief
+                        </h2>
+                        <p class="card-description">Describe your requirements in natural language. Include plot dimensions, rooms, and spatial relationships.</p>
+                    </div>
+                    <div class="card-header-right">
+                        <span class="shortcut-hint">
+                            <kbd>Ctrl</kbd> + <kbd>Enter</kbd> to generate
+                        </span>
+                    </div>
+                </div>
+                <div class="input-body">
+                    <div class="textarea-wrapper">
+                        <textarea id="nl-input" class="nl-textarea" rows="5" placeholder="Example: Design a 2BHK house on a 40 × 60 ft plot with two bedrooms, two bathrooms, kitchen, living room and dining area. The kitchen should be near the dining area, bedrooms should be close to bathrooms, and the entrance should connect to the living room.">Design a 2BHK house on a 40 × 60 ft plot with two bedrooms, two bathrooms, kitchen, living room and dining area. The kitchen should be near the dining area, bedrooms should be close to bathrooms, and the entrance should connect to the living room.</textarea>
+                        <div class="textarea-char-count">
+                            <span id="char-count">0</span> characters
+                        </div>
+                    </div>
+
+                    <div class="input-controls">
+                        <div class="control-group">
+                            <label class="control-label">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                                Candidates
+                            </label>
+                            <div class="stepper">
+                                <button class="stepper-btn" onclick="adjustValue('candidates', -1)" aria-label="Decrease candidates">−</button>
+                                <input type="number" id="candidates" value="5" min="1" max="12" class="stepper-input">
+                                <button class="stepper-btn" onclick="adjustValue('candidates', 1)" aria-label="Increase candidates">+</button>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                Optimization Iterations
+                            </label>
+                            <div class="stepper">
+                                <button class="stepper-btn" onclick="adjustValue('iterations', -100)" aria-label="Decrease iterations">−</button>
+                                <input type="number" id="iterations" value="300" min="50" max="2000" step="50" class="stepper-input">
+                                <button class="stepper-btn" onclick="adjustValue('iterations', 100)" aria-label="Increase iterations">+</button>
+                            </div>
+                        </div>
+                        <div class="control-group">
+                            <label class="control-label">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                                Parser Backend
+                            </label>
+                            <select id="backend" class="select-input">
+                                <option value="rules">Rule-Based</option>
+                                <option value="llm">LLM (requires API key)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Example prompts -->
+                    <div class="example-prompts">
+                        <span class="example-label">Quick templates:</span>
+                        <button class="example-chip" onclick="loadExample(0)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                            2BHK House
+                        </button>
+                        <button class="example-chip" onclick="loadExample(1)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                            3BHK Villa
+                        </button>
+                        <button class="example-chip" onclick="loadExample(2)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+                            Studio Apartment
+                        </button>
+                        <button class="example-chip" onclick="loadExample(3)">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><path d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            Office Layout
+                        </button>
+                    </div>
+
+                    <button id="run-btn" class="run-button" onclick="runPipeline()">
+                        <span class="btn-content">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            Generate Floor Plan
+                        </span>
+                        <span class="btn-loading" style="display:none;">
+                            <div class="spinner"></div>
+                            Processing Pipeline...
+                        </span>
+                        <div class="btn-shimmer"></div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay" style="display:none;">
+        <div class="loading-card glass-card">
+            <div class="loading-animation">
+                <div class="loading-ring"></div>
+                <div class="loading-ring ring-2"></div>
+                <div class="loading-ring ring-3"></div>
+                <div class="loading-center-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="24" height="24"><path d="M3 21h18M3 7v1a3 3 0 003 3h12a3 3 0 003-3V7M6 21V11M18 21V11M12 21V11M3 7l9-4 9 4"/></svg>
+                </div>
+            </div>
+            <h3 id="loading-title">Running AI Pipeline...</h3>
+            <p id="loading-step" class="loading-step">Initializing agents</p>
+            <div class="loading-progress">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            <div class="loading-steps-list" id="loading-steps-list"></div>
+        </div>
+    </div>
+
+    <!-- Error Toast -->
+    <div id="error-toast" class="error-toast" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        <span id="error-toast-text"></span>
+        <button onclick="hideError()" class="toast-close">×</button>
+    </div>
+
+    <!-- Results Section -->
+    <section id="results-section" class="results-section" style="display:none;">
+        <div class="container">
+
+            <!-- Results Header -->
+            <div class="results-header">
+                <div class="results-header-left">
+                    <h2 class="section-title">
+                        <span class="gradient-text">Design Results</span>
+                    </h2>
+                    <p class="results-subtitle">Your AI-generated architectural design analysis</p>
+                </div>
+                <div class="results-meta">
+                    <div class="meta-chip">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                        <span id="elapsed-time">—</span>
+                    </div>
+                    <div class="meta-chip improvement" id="improvement-chip">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg>
+                        <span id="improvement-text">—</span>
+                    </div>
+                    <button class="action-chip" onclick="exportDesignJson()" title="Export complete project results as JSON">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                        <span>Export JSON</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Score Summary Gauges -->
+            <div class="score-cards-row">
+                <div class="score-card glass-card before-card">
+                    <div class="score-card-label">Before Optimization</div>
+                    <div class="score-gauge-wrapper">
+                        <svg class="score-gauge" viewBox="0 0 120 120">
+                            <circle class="gauge-track" cx="60" cy="60" r="52" stroke-width="8" fill="none"/>
+                            <circle class="gauge-fill gauge-fill-before" id="gauge-before" cx="60" cy="60" r="52" stroke-width="8" fill="none" stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+                        </svg>
+                        <div class="gauge-value" id="score-before">—</div>
+                    </div>
+                    <div class="score-sub" id="violations-before">— violations</div>
+                    <div class="score-utilization">
+                        <span>Utilization</span>
+                        <span id="util-before">—</span>
+                    </div>
+                </div>
+                <div class="score-card glass-card delta-card">
+                    <div class="score-card-label">Improvement</div>
+                    <div class="delta-display">
+                        <div class="delta-arrow">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                        </div>
+                        <div class="score-value delta-value" id="score-delta">—</div>
+                    </div>
+                    <div class="score-sub" id="violations-delta">—</div>
+                    <div class="delta-bar-wrapper">
+                        <div class="delta-bar" id="delta-bar"></div>
+                    </div>
+                </div>
+                <div class="score-card glass-card after-card">
+                    <div class="score-card-label">After Optimization</div>
+                    <div class="score-gauge-wrapper">
+                        <svg class="score-gauge" viewBox="0 0 120 120">
+                            <circle class="gauge-track" cx="60" cy="60" r="52" stroke-width="8" fill="none"/>
+                            <circle class="gauge-fill gauge-fill-after" id="gauge-after" cx="60" cy="60" r="52" stroke-width="8" fill="none" stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+                        </svg>
+                        <div class="gauge-value" id="score-after">—</div>
+                    </div>
+                    <div class="score-sub" id="violations-after">— violations</div>
+                    <div class="score-utilization">
+                        <span>Utilization</span>
+                        <span id="util-after">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs-container">
+                <div class="tab-bar">
+                    <button class="tab active" data-tab="optimization-tab" onclick="switchTab(this)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        Optimization
+                    </button>
+                    <button class="tab" data-tab="candidates-tab" onclick="switchTab(this)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                        Candidates
+                    </button>
+                    <button class="tab" data-tab="graph-tab" onclick="switchTab(this)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83"/></svg>
+                        Spatial Graph
+                    </button>
+                    <button class="tab" data-tab="requirements-tab" onclick="switchTab(this)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                        Requirements
+                    </button>
+                    <button class="tab" data-tab="scoring-tab" onclick="switchTab(this)">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                        Scoring & Audit
+                    </button>
+                    <div class="tab-indicator" id="tab-indicator"></div>
+                </div>
+
+                <!-- Tab: Optimization -->
+                <div class="tab-content active" id="optimization-tab">
+                    <div class="comparison-section">
+                        <div class="comparison-images glass-card">
+                            <div class="panel-header-with-actions">
+                                <h3 class="panel-title-inline">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                                    Before vs After Optimization
+                                </h3>
+                                <div class="panel-header-actions">
+                                    <button class="action-btn" onclick="downloadImage('after-img', 'optimized_floor_plan.png')" title="Download Optimized Floor Plan PNG">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                                        <span>Download Plan</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="comparison-wrapper">
+                                <div class="compare-pane">
+                                    <div class="compare-label before-label">Before</div>
+                                    <img id="before-img" alt="Before Optimization" class="result-image zoomable" onclick="openLightbox(this)">
+                                </div>
+                                <div class="compare-divider">
+                                    <div class="divider-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                                    </div>
+                                </div>
+                                <div class="compare-pane">
+                                    <div class="compare-label after-label">After</div>
+                                    <img id="after-img" alt="After Optimization" class="result-image zoomable" onclick="openLightbox(this)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-card" style="margin-top: 1.5rem;">
+                        <h3 class="panel-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18"><path d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg>
+                            Optimization Convergence History
+                        </h3>
+                        <div class="image-wrapper">
+                            <img id="history-img" alt="Optimization History" class="result-image zoomable" onclick="openLightbox(this)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Candidates -->
+                <div class="tab-content" id="candidates-tab">
+                    <div class="candidates-header">
+                        <p class="candidates-info">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Click any candidate to inspect full-size in the lightbox. The best candidate is highlighted and fed to the simulated annealing optimizer.
+                        </p>
+                    </div>
+                    <div id="candidates-grid" class="candidates-grid"></div>
+                </div>
+
+                <!-- Tab: Spatial Graph -->
+                <div class="tab-content" id="graph-tab">
+                    <div class="image-showcase glass-card">
+                        <div class="panel-header-with-actions">
+                            <h3 class="panel-title-inline">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+                                Spatial Relationship Graph
+                            </h3>
+                            <div class="panel-header-actions">
+                                <button class="action-btn" onclick="downloadImage('graph-img', 'spatial_relationship_graph.png')" title="Download Spatial Graph PNG">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                                    <span>Download Graph</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="image-wrapper">
+                            <img id="graph-img" alt="Spatial Graph" class="result-image zoomable" onclick="openLightbox(this)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Requirements -->
+                <div class="tab-content" id="requirements-tab">
+                    <div class="two-col">
+                        <div class="glass-card">
+                            <h3 class="panel-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                Extracted Rooms
+                                <span class="panel-count" id="rooms-count">0</span>
+                            </h3>
+                            <div id="rooms-list" class="rooms-grid"></div>
+                        </div>
+                        <div class="glass-card">
+                            <h3 class="panel-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                                Spatial Relationships
+                                <span class="panel-count" id="rels-count">0</span>
+                            </h3>
+                            <div id="relationships-list" class="relationships-list"></div>
+                            <div class="plot-info" id="plot-info"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Scoring -->
+                <div class="tab-content" id="scoring-tab">
+                    <div class="two-col">
+                        <div class="glass-card">
+                            <h3 class="panel-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                                Dimension Scores
+                            </h3>
+                            <div id="dimension-bars" class="dimension-bars"></div>
+                        </div>
+                        <div class="glass-card">
+                            <h3 class="panel-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                Violations
+                            </h3>
+                            <div id="violations-list" class="violations-list"></div>
+                        </div>
+                    </div>
+                    <div class="glass-card" style="margin-top: 1.5rem;">
+                        <h3 class="panel-title">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18"><path d="M3 10h18M3 14h18M3 18h18M3 6h18"/></svg>
+                            Optimized Room Details
+                        </h3>
+                        <div class="table-wrapper">
+                            <table class="data-table" id="rooms-table">
+                                <thead>
+                                    <tr>
+                                        <th>Room</th>
+                                        <th>Type</th>
+                                        <th>Position (x, y)</th>
+                                        <th>Size (W × H)</th>
+                                        <th>Area (sqft)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rooms-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about-section" class="about-section">
+        <div class="container">
+            <div class="glass-card about-card">
+                <h2 class="section-title"><span class="gradient-text">About This Framework</span></h2>
+                <p>This is a 50% prototype of the <strong>Agentic AI Framework for Constraint-Aware Architectural Design and BIM-Based Decision Support</strong>. It demonstrates the core pipeline: natural-language understanding, spatial reasoning, procedural generation, constraint evaluation, and iterative optimization.</p>
+                <div class="about-features">
+                    <div class="about-feature">
+                        <div class="about-feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="24" height="24"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                        </div>
+                        <h4>Natural Language Understanding</h4>
+                        <p>Parse complex architectural briefs into structured requirements</p>
+                    </div>
+                    <div class="about-feature">
+                        <div class="about-feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="24" height="24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4"/></svg>
+                        </div>
+                        <h4>Spatial Reasoning</h4>
+                        <p>Build relationship graphs to model room adjacencies and separations</p>
+                    </div>
+                    <div class="about-feature">
+                        <div class="about-feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="24" height="24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        </div>
+                        <h4>Simulated Annealing</h4>
+                        <p>Iterative optimization that refines floor plans toward global optima</p>
+                    </div>
+                    <div class="about-feature">
+                        <div class="about-feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="24" height="24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                        </div>
+                        <h4>8-Dimension Scoring</h4>
+                        <p>Comprehensive spatial quality evaluation across multiple criteria</p>
+                    </div>
+                </div>
+                <div class="tech-tags">
+                    <span class="tech-tag">Python</span>
+                    <span class="tech-tag">Flask</span>
+                    <span class="tech-tag">NetworkX</span>
+                    <span class="tech-tag">Matplotlib</span>
+                    <span class="tech-tag">Simulated Annealing</span>
+                    <span class="tech-tag">Multi-Agent Architecture</span>
+                    <span class="tech-tag">Constraint Optimization</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="20" height="20"><path d="M3 21h18M3 7v1a3 3 0 003 3h12a3 3 0 003-3V7M6 21V11M18 21V11M12 21V11M3 7l9-4 9 4"/></svg>
+                PlanAgent
+            </div>
+            <p>Agentic AI Architectural Design Framework &middot; Academic Project</p>
+        </div>
+    </footer>
+
+    <!-- Lightbox Modal -->
+    <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+        <div class="lightbox-toolbar" onclick="event.stopPropagation()">
+            <button class="lightbox-action-btn" onclick="downloadCurrentLightbox()" title="Download image">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                <span>Download</span>
+            </button>
+            <button class="lightbox-close" onclick="closeLightbox()" title="Close (Esc)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </button>
+        </div>
+        <img id="lightbox-img" class="lightbox-img" alt="Full size view" onclick="event.stopPropagation()">
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
