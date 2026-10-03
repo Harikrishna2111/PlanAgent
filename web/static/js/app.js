@@ -517,12 +517,10 @@ async function runPipeline() {
     const candidates = parseInt(document.getElementById('candidates').value) || 5;
     const iterations = parseInt(document.getElementById('iterations').value) || 300;
     const backend = document.getElementById('backend').value;
-
     if (!input) {
         showError('Please enter an architectural brief before generating.');
         return;
     }
-
     btn.disabled = true;
     btn.querySelector('.btn-content').style.display = 'none';
     btn.querySelector('.btn-loading').style.display = 'flex';
@@ -530,10 +528,15 @@ async function runPipeline() {
     showLoading();
 
     try {
+        const maxRoundsEl = document.getElementById('max-rounds');
+        const maxRounds = maxRoundsEl ? parseInt(maxRoundsEl.value) || 3 : 3;
+        const payload = { input, candidates, iterations, backend, max_rounds: maxRounds };
+
+
         const response = await fetch('/api/pipeline', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ input, candidates, iterations, backend }),
+            body: JSON.stringify(payload),
         });
 
         const data = await response.json();
@@ -626,6 +629,83 @@ function renderResults(data) {
     renderDimensionBars(data.before_dimension_scores, data.after_dimension_scores);
     renderViolations(data.before_violation_details, data.after_violation_details);
     renderRoomsTable(data.optimized_rooms);
+
+    // Agent Activity tab (agentic mode only)
+    const agentTabBtn = document.getElementById('agent-tab-btn');
+    const agentBadge = document.getElementById('agent-tab-badge');
+    if (data.is_agentic && data.agent_activity && data.agent_activity.length > 0) {
+        if (agentTabBtn) agentTabBtn.style.display = '';
+        if (agentBadge) agentBadge.textContent = data.agent_activity.length;
+        renderAgentActivity(data);
+    } else {
+        if (agentTabBtn) agentTabBtn.style.display = 'none';
+    }
+}
+
+
+
+// ── Render Agent Activity Timeline ──────────────────────────────
+const AGENT_META = {
+    'OrchestratorAgent': { icon: '🎯', color: '#a78bfa', label: 'Orchestrator' },
+    'RequirementAgent':  { icon: '📋', color: '#60a5fa', label: 'Requirement' },
+    'SpatialAgent':      { icon: '🗺️',  color: '#34d399', label: 'Spatial' },
+    'DesignAgent':       { icon: '📐', color: '#fb923c', label: 'Design' },
+    'CriticAgent':       { icon: '✅', color: '#f472b6', label: 'Critic' },
+    'OptimizationAgent': { icon: '⚡', color: '#facc15', label: 'Optimizer' },
+};
+
+function renderAgentActivity(data) {
+    const timeline = document.getElementById('agent-timeline');
+    const chipsEl  = document.getElementById('agent-summary-chips');
+    if (!timeline) return;
+
+    const activity = data.agent_activity || [];
+
+    // Summary chips
+    if (chipsEl) {
+        const agents = [...new Set(activity.map(a => a.agent))];
+        chipsEl.innerHTML = [
+            `<span class="agent-chip">Rounds: <strong>${data.rounds_completed || 1}</strong></span>`,
+            `<span class="agent-chip verdict-${(data.final_verdict || '').toLowerCase()}">Verdict: <strong>${data.final_verdict || 'N/A'}</strong></span>`,
+            `<span class="agent-chip">Actions: <strong>${activity.length}</strong></span>`,
+            ...(data.round_scores || []).map((s, i) => `<span class="agent-chip">Round ${i+1}: <strong>${s.toFixed(3)}</strong></span>`),
+        ].join('');
+    }
+
+    // Timeline items
+    timeline.innerHTML = activity.map((msg, idx) => {
+        const meta = AGENT_META[msg.agent] || { icon: '🤖', color: '#94a3b8', label: msg.agent };
+        const suggestions = (msg.payload && msg.payload.suggestions) ? msg.payload.suggestions : [];
+        const verdict = (msg.payload && msg.payload.verdict) ? msg.payload.verdict : '';
+        const score = (msg.payload && msg.payload.best_score !== undefined) ? msg.payload.best_score : null;
+        const weakDims = (msg.payload && msg.payload.weak_dimensions) ? msg.payload.weak_dimensions : [];
+
+        const verdictBadge = verdict
+            ? `<span class="verdict-badge verdict-${verdict.toLowerCase()}">${verdict}</span>` : '';
+        const scoreBadge = score !== null
+            ? `<span class="score-badge">Score: ${score.toFixed(3)}</span>` : '';
+
+        const suggestionsHtml = suggestions.length > 0
+            ? `<ul class="agent-suggestions">${suggestions.map(s => `<li>${s}</li>`).join('')}</ul>` : '';
+
+        const weakDimsHtml = weakDims.length > 0
+            ? `<div class="agent-weak-dims">Weak: ${weakDims.map(d => `<span class="weak-dim-tag">${d.replace(/_/g,' ')}</span>`).join(' ')}</div>` : '';
+
+        return `
+        <div class="timeline-item" style="animation: fadeUp 0.3s ease ${idx * 0.04}s both;">
+            <div class="timeline-dot" style="background: ${meta.color}; box-shadow: 0 0 8px ${meta.color}44;">${meta.icon}</div>
+            <div class="timeline-content glass-card-subtle">
+                <div class="timeline-header">
+                    <span class="timeline-agent" style="color: ${meta.color};">${meta.label}</span>
+                    <span class="timeline-action">${msg.action}</span>
+                    <div class="timeline-badges">${verdictBadge}${scoreBadge}</div>
+                </div>
+                ${msg.reasoning ? `<p class="timeline-reasoning">${msg.reasoning}</p>` : ''}
+                ${weakDimsHtml}
+                ${suggestionsHtml}
+            </div>
+        </div>`;
+    }).join('');
 }
 
 // ── Animate Score Gauge ─────────────────────────────────────────
@@ -826,3 +906,17 @@ document.addEventListener('keydown', (e) => {
         runPipeline();
     }
 });
+
+// ── Gemini API Key Management ────────────────────────────────────
+
+function toggleApiKeyPanel() {
+    // Shows/hides the Max Rounds stepper when Agentic mode is selected
+    const backend = document.getElementById('backend').value;
+    const roundsControl = document.getElementById('rounds-control');
+    if (roundsControl) {
+        roundsControl.style.display = backend === 'agentic' ? 'flex' : 'none';
+    }
+}
+
+
+

@@ -16,6 +16,7 @@ from models import (
     SpatialRelationship,
     RelationshipType,
     RoomRequirement,
+    RoomType,
 )
 
 
@@ -27,6 +28,61 @@ WEIGHT_MAP = {
     RelationshipType.CONNECTED_TO: 2.0,   # stronger than "near"
     RelationshipType.AWAY_FROM: -1.0,
 }
+
+
+def infer_implicit_relationships(
+    requirements: DesignRequirements,
+) -> List[SpatialRelationship]:
+    """
+    Infer standard residential relationships that a brief usually leaves unstated:
+      - Kitchen      → near         → Dining
+      - Bedroom i    → near         → Bathroom i
+      - Bedroom      → away_from    → Entrance   (private vs public zone)
+      - Living Room  → connected_to → Entrance
+
+    A rule is skipped when the brief already relates the same pair of rooms,
+    so explicit user constraints always take precedence.
+    """
+    by_type: Dict[RoomType, List[str]] = {}
+    for room in requirements.rooms:
+        by_type.setdefault(room.room_type, []).append(room.name)
+
+    related = {frozenset((r.room_a, r.room_b)) for r in requirements.relationships}
+    inferred: List[SpatialRelationship] = []
+
+    def add(a: str, b: str, rel: RelationshipType) -> None:
+        pair = frozenset((a, b))
+        if a != b and pair not in related:
+            related.add(pair)
+            inferred.append(SpatialRelationship(room_a=a, room_b=b, relationship=rel))
+
+    kitchens = by_type.get(RoomType.KITCHEN, [])
+    dinings = by_type.get(RoomType.DINING, [])
+    bedrooms = by_type.get(RoomType.BEDROOM, [])
+    bathrooms = by_type.get(RoomType.BATHROOM, [])
+    livings = by_type.get(RoomType.LIVING_ROOM, [])
+    entrances = by_type.get(RoomType.ENTRANCE, [])
+
+    if kitchens and dinings:
+        add(kitchens[0], dinings[0], RelationshipType.NEAR)
+    # Pair Bedroom i with Bathroom i; extra bedrooms share the last bathroom
+    for i, bed in enumerate(bedrooms):
+        if bathrooms:
+            add(bed, bathrooms[min(i, len(bathrooms) - 1)], RelationshipType.NEAR)
+    if entrances:
+        for bed in bedrooms:
+            add(bed, entrances[0], RelationshipType.AWAY_FROM)
+        if livings:
+            add(livings[0], entrances[0], RelationshipType.CONNECTED_TO)
+
+    return inferred
+
+
+def add_implicit_relationships(requirements: DesignRequirements) -> List[SpatialRelationship]:
+    """Append inferred relationships to the requirements in place; returns those added."""
+    inferred = infer_implicit_relationships(requirements)
+    requirements.relationships.extend(inferred)
+    return inferred
 
 
 def build_spatial_graph(requirements: DesignRequirements) -> nx.Graph:

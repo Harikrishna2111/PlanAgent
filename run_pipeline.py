@@ -24,7 +24,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from models import DesignRequirements, FloorPlan
 from agents.requirement_agent import create_requirement_agent
-from spatial.graph import build_spatial_graph, graph_summary
+from spatial.graph import add_implicit_relationships, build_spatial_graph, graph_summary
 from generation.floor_plan_generator import generate_floor_plans
 from evaluation.spatial_critic import SpatialCritic, EvaluationResult
 from agents.optimization_agent import optimize_floor_plan
@@ -78,6 +78,8 @@ def run_pipeline(
 
     agent = create_requirement_agent(backend=backend)
     requirements = agent.parse(nl_input)
+    # Spatial planning: add standard relationships the brief left unstated
+    add_implicit_relationships(requirements)
 
     if verbose:
         print(f"Plot: {requirements.plot_width} × {requirements.plot_height} ft")

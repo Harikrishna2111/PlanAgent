@@ -176,13 +176,24 @@
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
                                 Parser Backend
                             </label>
-                            <select id="backend" class="select-input">
-                                <option value="rules">Rule-Based</option>
-                                <option value="llm">LLM (requires API key)</option>
+                            <select id="backend" class="select-input" onchange="toggleApiKeyPanel()">
+                                <option value="rules">Rule-Based (offline)</option>
+                                <option value="llm">Gemini LLM (AI-powered)</option>
+                                <option value="agentic">⚡ Full Agentic (multi-agent)</option>
                             </select>
                         </div>
+                        <div class="control-group" id="rounds-control" style="display:none;">
+                            <label class="control-label">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                                Max Rounds
+                            </label>
+                            <div class="stepper">
+                                <button class="stepper-btn" onclick="adjustValue('max-rounds', -1)" aria-label="Decrease rounds">−</button>
+                                <input type="number" id="max-rounds" value="3" min="1" max="5" step="1" class="stepper-input">
+                                <button class="stepper-btn" onclick="adjustValue('max-rounds', 1)" aria-label="Increase rounds">+</button>
+                            </div>
+                        </div>
                     </div>
-
                     <!-- Example prompts -->
                     <div class="example-prompts">
                         <span class="example-label">Quick templates:</span>
@@ -329,6 +340,11 @@
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                         Optimization
                     </button>
+                    <button class="tab" data-tab="agent-activity-tab" id="agent-tab-btn" onclick="switchTab(this)" style="display:none;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+                        Agent Activity
+                        <span class="tab-badge" id="agent-tab-badge">0</span>
+                    </button>
                     <button class="tab" data-tab="candidates-tab" onclick="switchTab(this)">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
                         Candidates
@@ -346,6 +362,20 @@
                         Scoring & Audit
                     </button>
                     <div class="tab-indicator" id="tab-indicator"></div>
+                </div>
+
+                <!-- Tab: Agent Activity (agentic mode only) -->
+                <div class="tab-content" id="agent-activity-tab">
+                    <div class="glass-card agent-activity-card">
+                        <div class="agent-activity-header">
+                            <h3 class="panel-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="18" height="18"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg>
+                                Agent Reasoning &amp; Activity
+                            </h3>
+                            <div class="agent-summary-chips" id="agent-summary-chips"></div>
+                        </div>
+                        <div class="agent-timeline" id="agent-timeline"></div>
+                    </div>
                 </div>
 
                 <!-- Tab: Optimization -->

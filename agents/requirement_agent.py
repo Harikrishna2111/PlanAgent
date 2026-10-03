@@ -253,75 +253,146 @@ class RuleBasedRequirementAgent:
 
 
 # ---------------------------------------------------------------------------
-# LLM-based parser (optional — requires OPENAI_API_KEY or similar)
+# LLM-based parser (Gemini — requires GEMINI_API_KEY)
 # ---------------------------------------------------------------------------
 
 class LLMRequirementAgent:
     """
-    Uses an OpenAI-compatible chat API to convert NL → structured JSON.
-    Falls back to RuleBasedRequirementAgent if no API key is set.
+    Uses Google Gemini API to convert natural-language architectural briefs
+    into structured JSON requirements.
+
+    Requires:
+        pip install google-generativeai
+
+    Configuration:
+        Set the GEMINI_API_KEY environment variable, or pass api_key directly.
+        Falls back to RuleBasedRequirementAgent if no API key is available.
     """
 
-    SYSTEM_PROMPT = """You are an architectural requirement extraction agent.
-Given a natural-language architectural brief, extract:
-1. plot_width and plot_height in feet
-2. A list of rooms, each with: name, room_type (one of: bedroom, bathroom, kitchen, living_room, dining, entrance, hallway, balcony, study, pooja, utility, garage, staircase, store), min_width, min_height, preferred_area
-3. A list of spatial relationships, each with: room_a, room_b, relationship (one of: near, away_from, connected_to)
+    SYSTEM_PROMPT = """You are an expert architectural requirement extraction agent.
+Given a natural-language architectural brief, extract ALL of the following:
 
-Respond ONLY with valid JSON matching this schema:
+1. plot_width and plot_height in feet (numeric values).
+2. A list of rooms. For each room provide:
+   - name (string, e.g. "Bedroom 1", "Kitchen")
+   - room_type: MUST be one of: bedroom, bathroom, kitchen, living_room, dining, entrance, hallway, balcony, study, pooja, utility, garage, staircase, store
+   - min_width (float, feet — use sensible architectural defaults if not specified)
+   - min_height (float, feet)
+   - preferred_area (float, square feet)
+3. A list of spatial relationships. For each provide:
+   - room_a (string, must match a room name from the rooms list)
+   - room_b (string, must match a room name from the rooms list)
+   - relationship: MUST be one of: near, away_from, connected_to
+
+Rules:
+- Always include an "Entrance" room if the user doesn't mention one explicitly.
+- If the user says "2BHK" that means 2 bedrooms. "3BHK" means 3 bedrooms.
+- Use realistic Indian residential room dimensions as defaults.
+- "near" means rooms should be adjacent. "connected_to" means rooms share a doorway. "away_from" means rooms should be far apart.
+
+Respond ONLY with valid JSON (no markdown fences, no commentary). The JSON schema:
 {
   "plot_width": <float>,
   "plot_height": <float>,
-  "rooms": [{"name": str, "room_type": str, "min_width": float, "min_height": float, "preferred_area": float}],
-  "relationships": [{"room_a": str, "room_b": str, "relationship": str}]
+  "rooms": [{"name": "<str>", "room_type": "<str>", "min_width": <float>, "min_height": <float>, "preferred_area": <float>}],
+  "relationships": [{"room_a": "<str>", "room_b": "<str>", "relationship": "<str>"}]
 }"""
 
-    def __init__(self, api_key: Optional[str] = None, model: str = "gpt-4o-mini"):
-        self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
+    def __init__(
+        self,
+        api_key: Optional[str] = None,
+        model: str = "gemini-3.8-flash",
+    ):
+        self.api_key = api_key or os.environ.get("GEMINI_API_KEY")
         self.model = model
         self._fallback = RuleBasedRequirementAgent()
 
     def parse(self, text: str) -> DesignRequirements:
         if not self.api_key:
-            print("[RequirementAgent] No API key found — using rule-based parser.")
+            print("[RequirementAgent] No GEMINI_API_KEY found — using rule-based parser.")
             return self._fallback.parse(text)
         try:
-            return self._call_llm(text)
+            return self._call_gemini(text)
         except Exception as e:
-            print(f"[RequirementAgent] LLM call failed ({e}) — falling back to rules.")
+            print(f"[RequirementAgent] Gemini call failed ({e}) — falling back to rules.")
             return self._fallback.parse(text)
 
-    def _call_llm(self, text: str) -> DesignRequirements:
-        import urllib.request
-        url = "https://api.openai.com/v1/chat/completions"
-        payload = json.dumps({
-            "model": self.model,
-            "messages": [
-                {"role": "system", "content": self.SYSTEM_PROMPT},
-                {"role": "user", "content": text},
-            ],
-            "temperature": 0.0,
-        }).encode()
-        req = urllib.request.Request(url, data=payload, headers={
-            "Authorization": f"Bearer {self.api_key}",
-            "Content-Type": "application/json",
-        })
-        with urllib.request.urlopen(req, timeout=30) as resp:
-            body = json.loads(resp.read())
-        content = body["choices"][0]["message"]["content"]
-        # Strip markdown fences if present
-        content = re.sub(r"```json\s*", "", content)
-        content = re.sub(r"```\s*", "", content)
-        d = json.loads(content)
-        d["raw_input"] = text
-        return DesignRequirements.from_dict(d)
+    def _call_gemini(self, text: str) -> DesignRequirements:
+        """Call Google Gemini API using the new google-genai SDK with retry logic."""
+        import time as _time
+        from google import genai
+        from google.genai import types
+
+        client = genai.Client(api_key=self.api_key)
+        full_prompt = (
+            text
+            + "\n\nRespond ONLY with valid JSON matching the schema above. No explanations outside the JSON block."
+        )
+
+        last_error = "unknown"
+        for attempt in range(1, 4):
+            try:
+                response = client.models.generate_content(
+                    model=self.model,
+                    contents=full_prompt,
+                    config=types.GenerateContentConfig(
+                        system_instruction=self.SYSTEM_PROMPT,
+                        temperature=0.1,
+                    ),
+                )
+                content = response.text.strip()
+                content = re.sub(r"```json\s*", "", content)
+                content = re.sub(r"```\s*", "", content)
+                match = re.search(r"(\{[\s\S]*\}|\[[\s\S]*\])", content)
+                if match:
+                    content = match.group(1)
+
+                d = json.loads(content)
+                d["raw_input"] = text
+
+                valid_types = {rt.value for rt in RoomType}
+                for room in d.get("rooms", []):
+                    if room.get("room_type") not in valid_types:
+                        rt = room["room_type"].lower().replace(" ", "_")
+                        room["room_type"] = rt if rt in valid_types else "study"
+
+                for rel in d.get("relationships", []):
+                    if rel.get("relationship") not in {"near", "away_from", "connected_to"}:
+                        rel["relationship"] = "near"
+
+                return DesignRequirements.from_dict(d)
+
+            except Exception as e:
+                last_error = str(e)
+                is_transient = any(
+                    code in last_error
+                    for code in ("503", "429", "UNAVAILABLE", "timeout", "Connection")
+                )
+                if is_transient and attempt < 3:
+                    _time.sleep(2 ** attempt)
+                    continue
+                break
+
+        raise RuntimeError(f"Gemini API call failed after retries: {last_error}")
 
 
 # ---------------------------------------------------------------------------
 # Factory
 # ---------------------------------------------------------------------------
 
-def create_requirement_agent(backend: str = "rules") -> "RuleBasedRequirementAgent | LLMRequirementAgent":
+def create_requirement_agent(
+    backend: str = "rules",
+    api_key: Optional[str] = None,
+) -> "RuleBasedRequirementAgent | LLMRequirementAgent":
+    """
+    Create a requirement parsing agent.
+
+    Args:
+        backend: "rules" for deterministic regex parser,
+                 "llm" for Google Gemini-powered parser.
+        api_key: Optional Gemini API key. If None, reads GEMINI_API_KEY env var.
+    """
     if backend == "llm":
-        return LLMRequirementAgent()
+        return LLMRequirementAgent(api_key=api_key)
     return RuleBasedRequirementAgent()
+

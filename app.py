@@ -18,6 +18,11 @@ import sys
 import time
 import traceback
 
+# Load .env file first so GEMINI_API_KEY is available to all modules
+from dotenv import load_dotenv
+load_dotenv()
+
+
 from flask import Flask, render_template, request, jsonify, send_from_directory
 
 # Ensure project root is on path
@@ -29,7 +34,8 @@ import matplotlib.pyplot as plt
 
 from models import DesignRequirements, FloorPlan
 from agents.requirement_agent import create_requirement_agent
-from spatial.graph import build_spatial_graph, graph_summary
+from agents.orchestrator import OrchestratorAgent
+from spatial.graph import add_implicit_relationships, build_spatial_graph, graph_summary
 from generation.floor_plan_generator import generate_floor_plans
 from evaluation.spatial_critic import SpatialCritic
 from agents.optimization_agent import optimize_floor_plan
@@ -81,16 +87,32 @@ def run_pipeline_api():
         num_candidates = int(data.get("candidates", 5))
         iterations = int(data.get("iterations", 300))
         backend = data.get("backend", "rules")
+        max_rounds = int(data.get("max_rounds", 3))
+
+        # API key is always read from the server's .env / environment variable
+        api_key = os.environ.get("GEMINI_API_KEY", "").strip() or None
 
         if not nl_input:
             return jsonify({"error": "Please provide an architectural brief."}), 400
+
+        needs_key = backend in ("llm", "agentic")
+        if needs_key and not api_key:
+            return jsonify({"error": "Gemini API key not found. Please set GEMINI_API_KEY in your .env file."}), 400
+
+        # ── AGENTIC PIPELINE ────────────────────────────────────────────────
+        if backend == "agentic":
+            return _run_agentic_pipeline(
+                nl_input, num_candidates, iterations, api_key, max_rounds
+            )
 
         results = {}
         t0 = time.time()
 
         # ── Step 1: Requirement Agent ──────────────────────────────────────
-        agent = create_requirement_agent(backend=backend)
+        agent = create_requirement_agent(backend=backend, api_key=api_key)
         requirements = agent.parse(nl_input)
+        # Spatial planning: add standard relationships the brief left unstated
+        add_implicit_relationships(requirements)
 
         results["requirements"] = {
             "plot_width": requirements.plot_width,
@@ -229,6 +251,142 @@ def run_pipeline_api():
 @app.route("/output/<path:filename>")
 def serve_output(filename):
     return send_from_directory(OUTPUT_DIR, filename)
+
+
+# ---------------------------------------------------------------------------
+# Agentic pipeline handler
+# ---------------------------------------------------------------------------
+
+def _run_agentic_pipeline(
+    nl_input: str,
+    num_candidates: int,
+    iterations: int,
+    api_key: str,
+    max_rounds: int,
+):
+    """Run the full agentic multi-agent pipeline and return serialized results."""
+    try:
+        orchestrator = OrchestratorAgent(
+            api_key=api_key,
+            max_rounds=max_rounds,
+            num_candidates=num_candidates,
+            optimization_iterations=iterations,
+        )
+
+        run_result = orchestrator.run(nl_input, backend="agentic")
+
+        requirements = run_result["requirements"]
+        plan_before = run_result["plan_before"]
+        plan_after = run_result["plan_after"]
+        eval_before = run_result["eval_before"]
+        eval_after = run_result["eval_after"]
+        history = run_result["history"]
+
+        results = {}
+
+        # Requirements
+        results["requirements"] = {
+            "plot_width": requirements.plot_width,
+            "plot_height": requirements.plot_height,
+            "rooms": [r.to_dict() for r in requirements.rooms],
+            "relationships": [r.to_dict() for r in requirements.relationships],
+        }
+
+        # Spatial graph
+        graph = build_spatial_graph(requirements)
+        results["graph_summary"] = graph_summary(graph)
+        fig = render_spatial_graph(requirements)
+        fig.patch.set_facecolor("#0f1117")
+        for ax in fig.get_axes():
+            ax.set_facecolor("#0f1117")
+            ax.title.set_color("white")
+        results["spatial_graph_img"] = _fig_to_base64(fig)
+
+        # Spatial strategy
+        results["spatial_strategy"] = run_result.get("spatial_strategy", {})
+
+        # Before scores
+        results["before_score"] = round(eval_before.total_score, 4)
+        results["before_violations"] = len(eval_before.violations)
+        results["before_violation_details"] = [
+            {"category": v.category, "description": v.description}
+            for v in eval_before.violations
+        ]
+        results["before_dimension_scores"] = {
+            k: round(v, 4) for k, v in eval_before.dimension_scores.items()
+        }
+
+        # Before plan image
+        fig = render_floor_plan(plan_before, title="Best Design-Round Plan")
+        fig.patch.set_facecolor("#0f1117")
+        for ax in fig.get_axes():
+            ax.set_facecolor("#181c25")
+        results["before_plan_img"] = _fig_to_base64(fig)
+
+        # After scores
+        results["after_score"] = round(eval_after.total_score, 4)
+        results["after_violations"] = len(eval_after.violations)
+        results["after_violation_details"] = [
+            {"category": v.category, "description": v.description}
+            for v in eval_after.violations
+        ]
+        results["after_dimension_scores"] = {
+            k: round(v, 4) for k, v in eval_after.dimension_scores.items()
+        }
+        results["improvement"] = round(eval_after.total_score - eval_before.total_score, 4)
+
+        # After plan image
+        fig = render_floor_plan(plan_after, title="Optimized Floor Plan")
+        fig.patch.set_facecolor("#0f1117")
+        for ax in fig.get_axes():
+            ax.set_facecolor("#181c25")
+        results["after_plan_img"] = _fig_to_base64(fig)
+
+        # Comparison
+        fig = render_comparison(plan_before, plan_after)
+        fig.patch.set_facecolor("#0f1117")
+        for ax in fig.get_axes():
+            ax.set_facecolor("#181c25")
+        results["comparison_img"] = _fig_to_base64(fig)
+
+        # Optimization history
+        if history:
+            fig = render_optimization_history(history)
+            fig.patch.set_facecolor("#0f1117")
+            for ax in fig.get_axes():
+                ax.set_facecolor("#181c25")
+                ax.xaxis.label.set_color("white")
+                ax.yaxis.label.set_color("white")
+                ax.title.set_color("white")
+                ax.tick_params(colors="white")
+                for spine in ax.spines.values():
+                    spine.set_edgecolor("#333")
+            results["history_img"] = _fig_to_base64(fig)
+            results["history"] = history
+
+        # Rooms + utilization
+        results["optimized_rooms"] = [r.to_dict() for r in plan_after.rooms]
+        results["utilization_before"] = round(plan_before.utilization * 100, 1)
+        results["utilization_after"] = round(plan_after.utilization * 100, 1)
+
+        # Agentic metadata
+        results["agent_activity"] = run_result.get("agent_activity", [])
+        results["rounds_completed"] = run_result.get("rounds_completed", 1)
+        results["round_scores"] = [round(s, 4) for s in run_result.get("round_scores", [])]
+        results["final_verdict"] = run_result.get("final_verdict", "N/A")
+        results["final_summary"] = run_result.get("final_summary", {})
+        results["is_agentic"] = True
+        results["elapsed"] = round(run_result.get("elapsed", 0), 2)
+
+        # Compatibility: add empty candidates list (classic pipeline field)
+        results["candidates"] = []
+        results["best_candidate_index"] = 1
+
+        return jsonify(results)
+
+    except Exception as e:
+        traceback.print_exc()
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":

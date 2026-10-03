@@ -16,6 +16,10 @@ Scoring dimensions:
 
 Each dimension yields a score in [0, 1].  The final score is a weighted sum,
 also in [0, 1].
+
+In addition, a circulation check reports any room that cannot be reached from
+the entrance by walking through rooms that share a wall.  It produces
+violations only and does not change the weighted score.
 """
 
 from __future__ import annotations
@@ -142,6 +146,9 @@ class SpatialCritic:
         s, vs = self._check_utilization(plan)
         result.dimension_scores["space_utilization"] = s
         result.violations.extend(vs)
+
+        # Circulation (reported only — not part of the weighted score)
+        result.violations.extend(self._check_circulation(plan))
 
         # Weighted total
         total = 0.0
@@ -315,6 +322,28 @@ class SpatialCritic:
                 ))
                 satisfied += dist / threshold
         return satisfied / len(away_rels) if away_rels else 1.0, violations
+
+    def _check_circulation(self, plan: FloorPlan) -> List[Violation]:
+        """Every room should be reachable from the entrance via shared walls."""
+        entrances = [r for r in plan.rooms if r.room_type.value == "entrance"]
+        if not entrances or len(plan.rooms) < 2:
+            return []
+        reached = {entrances[0].name}
+        frontier = [entrances[0]]
+        while frontier:
+            room = frontier.pop()
+            for other in plan.rooms:
+                if other.name not in reached and room.shares_edge(other, tolerance=1.0):
+                    reached.add(other.name)
+                    frontier.append(other)
+        return [
+            Violation(
+                "circulation",
+                f"{r.name} is not reachable from {entrances[0].name} through adjacent rooms",
+                severity=0.5,
+            )
+            for r in plan.rooms if r.name not in reached
+        ]
 
     def _check_utilization(
         self, plan: FloorPlan

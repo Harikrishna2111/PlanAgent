@@ -113,8 +113,13 @@ PlanAgent/
 - Unit test suite (18 tests)
 
 ### 🔶 Partially Implemented
-- LLM integration (abstraction ready, requires API key)
 - Room proportion constraints during expansion
+
+### ✅ Recently Added
+- Google Gemini LLM integration for intelligent requirement parsing
+- Premium web-based UI with glassmorphic design
+- API key management with browser localStorage
+- Interactive dashboard with tabbed result views
 
 ### 🔲 Future Work (Remaining 50%)
 - BIM model generation (IFC export)
@@ -124,4 +129,3 @@ PlanAgent/
 - Energy performance simulation
 - Multi-storey support
 - HouseGAN++ integration for learned generation
-- Web-based UI
