@@ -32,8 +32,7 @@ The core pipeline (NL parsing → spatial graph → generation → evaluation �
 - [x] Textarea input with character count and `Ctrl+Enter` shortcut
 - [x] Candidate count / iteration stepper controls
 - [x] Backend selector (Rule-based / Gemini LLM)
-- [x] Gemini API key input panel (shows/hides based on backend selection)
-- [x] API key persistence in browser localStorage
+- [x] Gemini API key read server-side from `.env` (`GEMINI_API_KEY`); no key input in the UI
 - [x] 4 example prompt templates (2BHK, 3BHK Villa, Studio, Office)
 - [x] Loading overlay with step-by-step progress animation
 - [x] Score gauges (SVG circular with count-up animation)
@@ -62,24 +61,19 @@ The core pipeline (NL parsing → spatial graph → generation → evaluation �
 
 ## What Remains to Be Implemented
 
-### High Priority
+### Current scope (per 0th review deck)
 - [ ] Test Gemini LLM integration with a live API key end-to-end
-- [ ] BIM model generation (IFC export)
-- [ ] Building code compliance checking
-
-### Medium Priority
-- [ ] Cost estimation module
-- [ ] Daylight and ventilation analysis
-- [ ] Energy performance simulation
-- [ ] Multi-storey support
 - [ ] Room proportion constraints during greedy expansion
-
-### Low Priority
-- [ ] HouseGAN++ integration for learned generation
 - [ ] API endpoint tests
 - [ ] Frontend tests (e.g., Playwright/Cypress)
 - [ ] CI/CD pipeline
 - [ ] Docker containerization
+
+### Future extensions (stated in the deck — NOT part of the current scope)
+- BIM generation
+- Building-code compliance
+- Cost estimation
+- Environmental performance (daylight, ventilation, energy)
 
 ---
 
@@ -98,7 +92,7 @@ The core pipeline (NL parsing → spatial graph → generation → evaluation �
 6. Matplotlib renders **static PNG images** for plans — no interactive SVG/Canvas rendering in the browser.
 7. No **door/window placement** — rooms only show rectangular boundaries.
 8. No **persistent storage** — results exist only in memory during a session; output files are overwritten each run.
-9. The web UI sends the Gemini API key **in plaintext** over the network (ok for localhost, not for production).
+9. Changing the Gemini API key requires editing `.env` and restarting the server.
 
 ---
 
@@ -125,7 +119,7 @@ The core pipeline (NL parsing → spatial graph → generation → evaluation �
 - System prompt requests JSON matching `DesignRequirements` schema
 - Validates room_type and relationship values before constructing dataclasses
 - Falls back to `RuleBasedRequirementAgent` on any error
-- API key can come from: (1) request body `api_key` field, (2) `GEMINI_API_KEY` env var
+- API key comes only from the `GEMINI_API_KEY` env var (loaded from `.env`)
 
 ### Optimization Parameters
 - Greedy expansion: up to 50 iterations, 1ft step, rooms capped at 3× preferred area
@@ -134,7 +128,6 @@ The core pipeline (NL parsing → spatial graph → generation → evaluation �
 
 ### Frontend State
 - `pipelineResult` global holds last API response
-- API key stored in `localStorage` under key `planagent_gemini_key`
 - Tab indicator uses absolute positioning with JS-computed offsets
 
 ---
@@ -143,7 +136,7 @@ The core pipeline (NL parsing → spatial graph → generation → evaluation �
 N/A — No database is used.
 
 ## API Changes
-- `POST /api/pipeline` now accepts optional `api_key` field in request body (added for Gemini integration)
+- `POST /api/pipeline` no longer accepts an `api_key` field; the key is read from `.env`
 
 ---
 
@@ -155,9 +148,6 @@ N/A — No database is used.
 ---
 
 ## Longer-term TODOs
-1. BIM/IFC export module
-2. Building code compliance
-3. Multi-storey support
-4. Replace procedural generator with HouseGAN++ or similar
-5. Interactive floor plan editing in the browser
-6. Docker deployment configuration
+1. Future extensions from the deck: BIM generation, building-code compliance, cost estimation, environmental performance
+2. Interactive floor plan editing in the browser
+3. Docker deployment configuration

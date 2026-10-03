@@ -1,6 +1,6 @@
 {
   "before": {
-    "total_score": 0.9391666666666667,
+    "total_score": 0.9420238095238096,
     "dimension_scores": {
       "room_completeness": 1.0,
       "room_dimensions": 1.0,
@@ -9,17 +9,33 @@
       "adjacency": 1.0,
       "connectivity": 1.0,
       "separation": 1.0,
-      "space_utilization": 0.3916666666666667
+      "space_utilization": 0.4202380952380953
     },
     "violations": [
       {
         "category": "utilization",
-        "description": "Low space utilization: 27.4%"
+        "description": "Low space utilization: 29.4%"
+      },
+      {
+        "category": "circulation",
+        "description": "Bedroom 1 is not reachable from Entrance through adjacent rooms"
+      },
+      {
+        "category": "circulation",
+        "description": "Bedroom 2 is not reachable from Entrance through adjacent rooms"
+      },
+      {
+        "category": "circulation",
+        "description": "Bathroom 1 is not reachable from Entrance through adjacent rooms"
+      },
+      {
+        "category": "circulation",
+        "description": "Bathroom 2 is not reachable from Entrance through adjacent rooms"
       }
     ]
   },
   "after": {
-    "total_score": 0.9697619047619048,
+    "total_score": 1.0,
     "dimension_scores": {
       "room_completeness": 1.0,
       "room_dimensions": 1.0,
@@ -28,7 +44,7 @@
       "adjacency": 1.0,
       "connectivity": 1.0,
       "separation": 1.0,
-      "space_utilization": 0.6976190476190477
+      "space_utilization": 1.0
     },
     "violations": []
   },
@@ -37,71 +53,71 @@
     "plot_height": 60.0,
     "rooms": [
       {
-        "name": "Living Room",
-        "room_type": "living_room",
+        "name": "Entrance",
+        "room_type": "entrance",
         "x": 0.0,
         "y": 0.0,
-        "width": 12,
-        "height": 14
+        "width": 4,
+        "height": 14.0
       },
       {
         "name": "Bedroom 1",
         "room_type": "bedroom",
-        "x": 0.0,
-        "y": 14.0,
-        "width": 10,
+        "x": 28.0,
+        "y": 48.0,
+        "width": 12,
         "height": 12
       },
       {
         "name": "Bedroom 2",
         "room_type": "bedroom",
-        "x": 0.0,
-        "y": 26.0,
-        "width": 10,
-        "height": 12
+        "x": 16.0,
+        "y": 32.0,
+        "width": 12,
+        "height": 28.0
+      },
+      {
+        "name": "Living Room",
+        "room_type": "living_room",
+        "x": 4.0,
+        "y": 0.0,
+        "width": 36.0,
+        "height": 14
       },
       {
         "name": "Dining",
         "room_type": "dining",
         "x": 0.0,
-        "y": 38.0,
+        "y": 14.0,
         "width": 8,
-        "height": 22.0
+        "height": 32.0
+      },
+      {
+        "name": "Bathroom 1",
+        "room_type": "bathroom",
+        "x": 28.0,
+        "y": 37.81244799442333,
+        "width": 12.0,
+        "height": 10.0
+      },
+      {
+        "name": "Bathroom 2",
+        "room_type": "bathroom",
+        "x": 7.0,
+        "y": 46.35209924748727,
+        "width": 9.0,
+        "height": 13.0
       },
       {
         "name": "Kitchen",
         "room_type": "kitchen",
         "x": 8.0,
-        "y": 38.0,
+        "y": 14.0,
         "width": 16.0,
         "height": 18.0
-      },
-      {
-        "name": "Bathroom 1",
-        "room_type": "bathroom",
-        "x": 10.0,
-        "y": 14.0,
-        "width": 10.0,
-        "height": 12.0
-      },
-      {
-        "name": "Bathroom 2",
-        "room_type": "bathroom",
-        "x": 10.0,
-        "y": 26.587088596340163,
-        "width": 10.0,
-        "height": 11.0
-      },
-      {
-        "name": "Entrance",
-        "room_type": "entrance",
-        "x": 12.0,
-        "y": 2.0,
-        "width": 7.0,
-        "height": 10.0
       }
     ],
-    "score": 0.9697619047619048,
+    "score": 1.0,
     "score_details": {
       "room_completeness": 1.0,
       "room_dimensions": 1.0,
@@ -110,7 +126,7 @@
       "adjacency": 1.0,
       "connectivity": 1.0,
       "separation": 1.0,
-      "space_utilization": 0.6976190476190477
+      "space_utilization": 1.0
     }
   }
 }

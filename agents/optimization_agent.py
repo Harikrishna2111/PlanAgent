@@ -7,7 +7,8 @@ Loop:
      constraint dimension, or a random move / resize / swap / expand
   3. Evaluate modified layout
   4. Accept/reject based on SA criterion
-  5. Repeat for N iterations
+  5. Repeat until quality stabilises (no improvement for `patience`
+     iterations) or the iteration budget is used up
   6. Return best layout found
 
 This demonstrates the Generate → Evaluate → Improve cycle required by the
@@ -444,8 +445,10 @@ class SimulatedAnnealingOptimizer:
         initial_temp: float = 0.15,
         cooling_rate: float = 0.997,
         seed: Optional[int] = 42,
+        patience: int = 150,
     ):
         self.max_iterations = max_iterations
+        self.patience = patience
         self.initial_temp = initial_temp
         self.cooling_rate = cooling_rate
         self.rng = random.Random(seed)
@@ -541,6 +544,7 @@ class SimulatedAnnealingOptimizer:
         targeted_share = 0.5   # fraction of steps spent repairing the weakest dimension
         targeted_counts: Dict[str, int] = {}
 
+        last_improvement = 0
         for iteration in range(self.max_iterations):
             if self.rng.random() < targeted_share:
                 candidate, dim = _targeted_repair(current, self.rng, requirements, current_eval)
@@ -560,11 +564,16 @@ class SimulatedAnnealingOptimizer:
                 current_score = cand_score
 
             if current_score > best_score:
+                if current_score > best_score + 1e-4:
+                    last_improvement = iteration
                 best = copy.deepcopy(current)
                 best_eval = copy.deepcopy(current_eval)
                 best_score = current_score
 
-            if iteration % 50 == 0 or iteration == self.max_iterations - 1:
+            # Quality has stabilised: perfect score, or no gain for `patience` steps
+            stabilised = best_score >= 1.0 - 1e-9 or iteration - last_improvement >= self.patience
+
+            if iteration % 50 == 0 or iteration == self.max_iterations - 1 or stabilised:
                 self.history.append({
                     "iteration": iteration,
                     "current_score": current_score,
@@ -572,6 +581,7 @@ class SimulatedAnnealingOptimizer:
                     "temperature": temp,
                     "violations": len(current_eval.violations),
                     "targeted_repairs": dict(targeted_counts),
+                    "stabilised": stabilised,
                 })
                 if verbose:
                     print(
@@ -579,6 +589,11 @@ class SimulatedAnnealingOptimizer:
                         f"best={best_score:.4f}  temp={temp:.4f}  "
                         f"violations={len(current_eval.violations)}"
                     )
+
+            if stabilised:
+                if verbose:
+                    print(f"  Quality stabilised at iteration {iteration} — stopping.")
+                break
 
             temp *= self.cooling_rate
 

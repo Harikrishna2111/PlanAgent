@@ -1,14 +1,10 @@
 """
-Constraint-Based Procedural Floor-Plan Generator.
+Floor-Plan Generation Model (stage 3 of the pipeline).
 
-Generates multiple candidate 2D floor plans by placing rooms on a grid inside
-the plot boundary.  Uses a strip-packing heuristic with spatial-relationship
-awareness to produce diverse candidates.
-
-This is a scientifically defensible procedural generator suitable for the 50%
-milestone.  The generation interface is modular — a learned generative model
-(e.g. HouseGAN++) can replace this module later by implementing the same
-`generate()` function signature.
+Generates multiple candidate 2D layouts per requirement, constrained by the
+plot dimensions and the extracted requirements.  Rooms are placed inside the
+plot boundary with a randomised, relationship-aware strip-packing strategy,
+so each seed samples a different candidate layout.
 """
 
 from __future__ import annotations

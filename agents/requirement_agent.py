@@ -31,7 +31,7 @@ from models import (
 # ---------------------------------------------------------------------------
 
 DEFAULT_ROOM_SPECS = {
-    RoomType.BEDROOM:     {"min_w": 10, "min_h": 12, "area": 150},
+    RoomType.BEDROOM:     {"min_w": 12, "min_h": 12, "area": 144},
     RoomType.BATHROOM:    {"min_w": 5,  "min_h": 7,  "area": 40},
     RoomType.KITCHEN:     {"min_w": 8,  "min_h": 10, "area": 100},
     RoomType.LIVING_ROOM: {"min_w": 12, "min_h": 14, "area": 200},

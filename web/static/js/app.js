@@ -434,11 +434,11 @@ function hideError() {
 
 // ── Pipeline Steps Animation ─────────────────────────────────────
 const STEP_MESSAGES = [
-    { text: 'Parsing natural language requirements', icon: '💬' },
-    { text: 'Building spatial relationship graph', icon: '🔗' },
-    { text: 'Generating candidate floor plans', icon: '📐' },
-    { text: 'Evaluating with spatial critic', icon: '✅' },
-    { text: 'Running simulated annealing optimization', icon: '⚡' },
+    { text: 'Requirement Agent — extracting requirements', icon: '💬' },
+    { text: 'Spatial Planning Agent — building relationship graph', icon: '🔗' },
+    { text: 'Floor-Plan Generation Model — generating candidate layouts', icon: '📐' },
+    { text: 'Spatial Critic Agent — scoring candidates', icon: '✅' },
+    { text: 'Optimization Agent — improving weakest constraints', icon: '⚡' },
     { text: 'Rendering publication visualizations', icon: '🎨' },
 ];
 
@@ -647,11 +647,11 @@ function renderResults(data) {
 // ── Render Agent Activity Timeline ──────────────────────────────
 const AGENT_META = {
     'OrchestratorAgent': { icon: '🎯', color: '#a78bfa', label: 'Orchestrator' },
-    'RequirementAgent':  { icon: '📋', color: '#60a5fa', label: 'Requirement' },
-    'SpatialAgent':      { icon: '🗺️',  color: '#34d399', label: 'Spatial' },
-    'DesignAgent':       { icon: '📐', color: '#fb923c', label: 'Design' },
-    'CriticAgent':       { icon: '✅', color: '#f472b6', label: 'Critic' },
-    'OptimizationAgent': { icon: '⚡', color: '#facc15', label: 'Optimizer' },
+    'RequirementAgent':  { icon: '📋', color: '#60a5fa', label: 'Requirement Agent' },
+    'SpatialAgent':      { icon: '🗺️',  color: '#34d399', label: 'Spatial Planning Agent' },
+    'DesignAgent':       { icon: '📐', color: '#fb923c', label: 'Floor-Plan Generation Model' },
+    'CriticAgent':       { icon: '✅', color: '#f472b6', label: 'Spatial Critic Agent' },
+    'OptimizationAgent': { icon: '⚡', color: '#facc15', label: 'Optimization Agent' },
 };
 
 function renderAgentActivity(data) {
@@ -907,9 +907,9 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// ── Gemini API Key Management ────────────────────────────────────
+// ── Backend selector (Gemini key is read server-side from .env) ──
 
-function toggleApiKeyPanel() {
+function toggleRoundsControl() {
     // Shows/hides the Max Rounds stepper when Agentic mode is selected
     const backend = document.getElementById('backend').value;
     const roundsControl = document.getElementById('rounds-control');

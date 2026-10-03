@@ -1,5 +1,5 @@
 """
-Spatial Agent — LLM-powered reasoning about spatial arrangement strategy.
+Spatial Planning Agent — reasoning about the spatial arrangement strategy.
 
 Given the structured requirements, this agent uses Gemini to reason about:
   - Optimal zone organisation (public vs private, front vs back)

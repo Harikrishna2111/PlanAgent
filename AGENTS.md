@@ -32,27 +32,27 @@ Academic project (50% milestone prototype) that converts natural-language archit
 Natural Language Input
         ↓
 ┌─────────────────────────────────┐
-│ Requirement Agent               │  agents/requirement_agent.py
-│ (Rule-based OR Gemini LLM)      │
+│ 1. Requirement Agent            │  agents/requirement_agent.py
+│ (Gemini LLM, rule-based fallback│
 └──────────────┬──────────────────┘
                ↓
 ┌─────────────────────────────────┐
-│ Spatial Graph (NetworkX)        │  spatial/graph.py
+│ 2. Spatial Planning Agent       │  spatial/graph.py, agents/spatial_agent.py
 │ (+ inferred default relations)  │
 └──────────────┬──────────────────┘
                ↓
 ┌─────────────────────────────────┐
-│ Floor-Plan Generator            │  generation/floor_plan_generator.py
-│ (Strip-packing heuristic)       │
+│ 3. Floor-Plan Generation Model  │  generation/floor_plan_generator.py
+│ (randomised strip-packing)      │
 └──────────────┬──────────────────┘
                ↓
 ┌─────────────────────────────────┐
-│ Spatial Critic                  │  evaluation/spatial_critic.py
+│ 4. Spatial Critic Agent         │  evaluation/spatial_critic.py
 │ (8-dimension deterministic)     │
 └──────────────┬──────────────────┘
                ↓
 ┌─────────────────────────────────┐
-│ Optimization Agent              │  agents/optimization_agent.py
+│ 5. Optimization Agent           │  agents/optimization_agent.py
 │ (Greedy + targeted SA + polish) │
 └──────────────┬──────────────────┘
                ↓
@@ -90,7 +90,7 @@ PlanAgent/
 │
 ├── generation/
 │   ├── __init__.py
-│   └── floor_plan_generator.py       # Constraint-based procedural generator
+│   └── floor_plan_generator.py       # Floor-Plan Generation Model
 │
 ├── evaluation/
 │   ├── __init__.py
@@ -169,7 +169,7 @@ A **circulation** check (every room reachable from the Entrance through rooms th
 
 ### Optimization phases
 1. Greedy expansion to raise utilization
-2. Simulated annealing: half the steps repair the weakest repairable dimension (sampled by `weight × (1 − score)`), half are random moves/resizes/swaps/expansions
+2. Simulated annealing: half the steps repair the weakest repairable dimension (sampled by `weight × (1 − score)`), half are random moves/resizes/swaps/expansions. Stops when quality stabilises (perfect score, or no gain for `patience`=150 iterations)
 3. Polish: trims overlapping walls and reconnects rooms cut off from the entrance, only when this reduces violations without lowering the score
 
 ---
@@ -184,8 +184,8 @@ A **circulation** check (every room reachable from the Entrance through rooms th
   "input": "Design a 2BHK house on a 40x60 ft plot...",
   "candidates": 5,
   "iterations": 300,
-  "backend": "rules",
-  "api_key": "optional-gemini-key"
+  "backend": "llm",
+  "max_rounds": 3
 }
 ```
 
@@ -206,7 +206,7 @@ Single-page app in `web/templates/index.html`:
 - **Particle canvas background** with ambient gradient orbs
 - **Hero section** with stats badges
 - **Pipeline flow indicator** (5-step visual)
-- **Input section**: textarea, candidate/iteration steppers, backend selector, Gemini API key panel, example templates
+- **Input section**: textarea, candidate/iteration steppers, backend selector, example templates (no API-key input — the key comes from `.env`)
 - **Loading overlay** with step-by-step progress animation
 - **Results section** with tabbed interface:
   - Optimization (before/after comparison + convergence chart)
@@ -217,14 +217,14 @@ Single-page app in `web/templates/index.html`:
 - **Lightbox** for full-size image viewing
 - **Export** — JSON download of full results
 
-Frontend JS (`web/static/js/app.js`): ~900 lines handling particles, tab management, API calls, result rendering, gauges, lightbox, API key management (localStorage).
+Frontend JS (`web/static/js/app.js`): ~900 lines handling particles, tab management, API calls, result rendering, gauges, lightbox.
 
 ---
 
 ## Authentication / Authorization
 - **None** — no user authentication system.
-- Gemini API key is passed per-request from the frontend. It is stored in `localStorage` on the client side and never persisted on the server.
-- The `GEMINI_API_KEY` environment variable is also checked as a fallback.
+- The Gemini API key is read **only** on the server from `GEMINI_API_KEY` in the `.env` file (loaded by `python-dotenv` in `app.py`). The UI never asks for, stores or sends a key.
+- `backend="llm"` falls back to the rule-based parser when no key is set; `backend="agentic"` returns a 400 error asking for the key in `.env`.
 
 ---
 
@@ -232,15 +232,19 @@ Frontend JS (`web/static/js/app.js`): ~900 lines handling particles, tab managem
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `GEMINI_API_KEY` | Optional | Fallback Gemini API key (if not passed per-request from UI) |
+| `GEMINI_API_KEY` | Optional | Gemini API key, set in `.env` (gitignored). Needed for the LLM and agentic backends |
 | Python 3.10+ | Required | Uses `__future__` annotations, `match` not used |
 
-No `.env` file exists. No config files beyond `requirements.txt`.
+`.env` (gitignored) holds `GEMINI_API_KEY`. No other config files beyond `requirements.txt`.
 
 Flask runs with `debug=False`, `host=0.0.0.0`, `port=5000`.
 Matplotlib uses `"Agg"` backend (non-interactive, required for server use).
 
 ---
+
+## Source of Truth
+
+`0th_Review_Agentic_AI_Architectural_Design.pptx` is the source of truth for the project's scope, stage names and claims. Stage names in code comments, the UI and docs must match it: Requirement Agent, Spatial Planning Agent, Floor-Plan Generation Model, Spatial Critic Agent, Optimization Agent. BIM generation, building-code compliance, cost estimation and environmental performance are **future extensions only** — never present them as implemented.
 
 ## Things an AI Agent MUST NOT Change Without Asking
 
@@ -311,4 +315,4 @@ No deployment configuration exists. The project runs locally only. No Docker, no
 ## Git History
 - **Commit 1** (`5ea7bff`, 2026-10-01): Initial model files and pipeline
 - **Commit 2** (`c84db07`, 2026-10-01): Added web UI
-- **Uncommitted changes**: Gemini LLM integration, API key UI panel, updated requirements.txt, updated README
+- **Uncommitted changes**: Gemini LLM integration, updated requirements.txt, updated README

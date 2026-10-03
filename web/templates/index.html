@@ -61,7 +61,7 @@
             <div class="hero-stats">
                 <div class="hero-stat">
                     <span class="hero-stat-value">5</span>
-                    <span class="hero-stat-label">AI Agents</span>
+                    <span class="hero-stat-label">Specialized Stages</span>
                 </div>
                 <div class="hero-stat-divider"></div>
                 <div class="hero-stat">
@@ -92,7 +92,7 @@
                 <div class="step-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
                 </div>
-                <span class="step-label">Spatial<br>Graph</span>
+                <span class="step-label">Spatial Planning<br>Agent</span>
                 <div class="step-pulse"></div>
             </div>
             <div class="flow-connector"><div class="connector-line"></div></div>
@@ -100,7 +100,7 @@
                 <div class="step-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
                 </div>
-                <span class="step-label">Floor-Plan<br>Generation</span>
+                <span class="step-label">Floor-Plan<br>Generation Model</span>
                 <div class="step-pulse"></div>
             </div>
             <div class="flow-connector"><div class="connector-line"></div></div>
@@ -108,7 +108,7 @@
                 <div class="step-icon">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
                 </div>
-                <span class="step-label">Spatial<br>Critic</span>
+                <span class="step-label">Spatial Critic<br>Agent</span>
                 <div class="step-pulse"></div>
             </div>
             <div class="flow-connector"><div class="connector-line"></div></div>
@@ -176,9 +176,9 @@
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="14" height="14"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
                                 Parser Backend
                             </label>
-                            <select id="backend" class="select-input" onchange="toggleApiKeyPanel()">
-                                <option value="rules">Rule-Based (offline)</option>
-                                <option value="llm">Gemini LLM (AI-powered)</option>
+                            <select id="backend" class="select-input" onchange="toggleRoundsControl()">
+                                <option value="llm" selected>LLM Requirement Agent (Gemini)</option>
+                                <option value="rules">Rule-Based (offline fallback)</option>
                                 <option value="agentic">⚡ Full Agentic (multi-agent)</option>
                             </select>
                         </div>
@@ -526,7 +526,7 @@
         <div class="container">
             <div class="glass-card about-card">
                 <h2 class="section-title"><span class="gradient-text">About This Framework</span></h2>
-                <p>This is a 50% prototype of the <strong>Agentic AI Framework for Constraint-Aware Architectural Design and BIM-Based Decision Support</strong>. It demonstrates the core pipeline: natural-language understanding, spatial reasoning, procedural generation, constraint evaluation, and iterative optimization.</p>
+                <p>This is a 50% prototype of the <strong>Agentic AI Framework for Constraint-Aware Architectural Design and BIM-Based Decision Support</strong>. It demonstrates the core pipeline: requirement understanding, spatial reasoning, layout generation, spatial evaluation and iterative optimization, closed in a generate&ndash;evaluate&ndash;refine loop. BIM generation, building-code compliance, cost estimation and environmental performance are future extensions and are not part of the current implementation.</p>
                 <div class="about-features">
                     <div class="about-feature">
                         <div class="about-feature-icon">
@@ -546,15 +546,15 @@
                         <div class="about-feature-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="24" height="24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                         </div>
-                        <h4>Simulated Annealing</h4>
-                        <p>Iterative optimization that refines floor plans toward global optima</p>
+                        <h4>Iterative Optimization</h4>
+                        <p>Targets the lowest-scoring constraints and repeats until quality stabilises</p>
                     </div>
                     <div class="about-feature">
                         <div class="about-feature-icon">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="24" height="24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                         </div>
-                        <h4>8-Dimension Scoring</h4>
-                        <p>Comprehensive spatial quality evaluation across multiple criteria</p>
+                        <h4>Spatial Evaluation</h4>
+                        <p>Room sizes, relationships, overlaps, connectivity, circulation and space utilization</p>
                     </div>
                 </div>
                 <div class="tech-tags">

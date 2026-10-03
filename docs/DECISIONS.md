@@ -20,7 +20,7 @@
 - **Decision**: Replace the original OpenAI-based `LLMRequirementAgent` with Google Gemini (`gemini-2.0-flash` via `google-generativeai` SDK).
 - **Reason**: The project owner has a Gemini Pro subscription. The `google-generativeai` SDK supports structured JSON output via `response_mime_type="application/json"`, which is more reliable than parsing free-text.
 - **Alternatives considered**: OpenAI GPT-4o-mini (was the original implementation, replaced because user prefers Gemini).
-- **Consequences**: Requires `google-generativeai>=0.8.0` dependency. API key is passed per-request from the frontend or via `GEMINI_API_KEY` env var.
+- **Consequences**: Requires `google-generativeai>=0.8.0` dependency. API key is read from the `GEMINI_API_KEY` env var (`.env`).
 
 ---
 
@@ -94,10 +94,10 @@
 
 ---
 
-## Decision 10: API Key Stored in Browser localStorage
+## Decision 10: API Key Read from `.env` Only
 
-- **Date**: 2026-10-02
-- **Decision**: The Gemini API key is stored in the browser's `localStorage` and sent per-request in the POST body. It is never stored on the server.
-- **Reason**: Simplest approach for a local-only academic project. No need for server-side key management, encryption, or user accounts.
-- **Alternatives considered**: Server-side `.env` file (would work but requires restarting the server to change keys), database storage (no database exists).
-- **Consequences**: The key is visible in browser developer tools and sent in plaintext over HTTP. Acceptable for localhost usage only. The `GEMINI_API_KEY` environment variable is checked as a fallback.
+- **Date**: 2026-10-03 (supersedes the 2026-10-02 browser-localStorage approach)
+- **Decision**: The Gemini API key is read only on the server from `GEMINI_API_KEY` in `.env`. The UI has no key input and never sends a key.
+- **Reason**: Keeps the key out of the browser and the request body, and removes a setup step from the UI.
+- **Alternatives considered**: Browser `localStorage` + per-request key (previous approach — exposed the key in dev tools and in plaintext requests).
+- **Consequences**: Changing the key requires editing `.env` and restarting the server. `.env` is gitignored.

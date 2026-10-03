@@ -8,20 +8,28 @@ Multi-agent pipeline that converts natural-language architectural briefs into
 optimized 2D floor plans through:
 
 ```
-Natural Language Input
+User · natural-language requirement
         ↓
-Requirement Agent (NL → structured JSON)
+1. Requirement Agent (LLM)              → extracted requirements
         ↓
-Spatial Graph (rooms + relationships)
+2. Spatial Planning Agent (reasoning)   → spatial graph
         ↓
-Floor-Plan Generator (constraint-based procedural)
+3. Floor-Plan Generation Model          → candidate layouts
         ↓
-Spatial Critic (deterministic scoring)
+4. Spatial Critic Agent (evaluation)    → spatial score
         ↓
-Optimization Agent (greedy expansion + simulated annealing)
+5. Optimization Agent (refinement)      → refined layout
         ↓
-Optimized Floor Plan + Visualizations
+Optimized floor plan + spatial representation & score
 ```
+
+Each stage is handled by a specialized model, and the layout is improved
+through a closed generate → evaluate → improve → re-evaluate loop rather than
+produced in a single pass.
+
+**Base paper:** A. B. Yenew, B. G. Assefa and E. G. Belay, "HouseGanDi: A Hybrid
+Approach to Strike a Balance of Sampling Time and Diversity in Floorplan
+Generation," *IEEE Access*, vol. 12, pp. 125235–125252, 2024.
 
 ## Quick Start
 
@@ -59,7 +67,7 @@ PlanAgent/
 │   └── graph.py                      # Spatial relationship graph (NetworkX)
 │
 ├── generation/
-│   └── floor_plan_generator.py       # Constraint-based procedural generator
+│   └── floor_plan_generator.py       # Floor-Plan Generation Model
 │
 ├── evaluation/
 │   └── spatial_critic.py             # Deterministic 8-dimension scoring
@@ -93,7 +101,9 @@ PlanAgent/
 | Adjacency | 0.15 | "near" rooms are adjacent |
 | Connectivity | 0.10 | "connected_to" rooms share an edge |
 | Separation | 0.05 | "away_from" rooms are far apart |
-| Space Utilization | 0.10 | 60-85% plot coverage is optimal |
+| Space Utilization | 0.10 | 70-90% plot coverage is optimal |
+
+A circulation check (every room reachable from the entrance) is also reported as violations.
 
 ## Implementation Status
 
@@ -118,14 +128,11 @@ PlanAgent/
 ### ✅ Recently Added
 - Google Gemini LLM integration for intelligent requirement parsing
 - Premium web-based UI with glassmorphic design
-- API key management with browser localStorage
+- Gemini API key read from `.env` (`GEMINI_API_KEY`) — no key input in the UI
 - Interactive dashboard with tabbed result views
 
-### 🔲 Future Work (Remaining 50%)
-- BIM model generation (IFC export)
-- Building code compliance checking
-- Cost estimation module
-- Daylight and ventilation analysis
-- Energy performance simulation
-- Multi-storey support
-- HouseGAN++ integration for learned generation
+### 🔲 Future Extensions (not part of the current implementation scope)
+- BIM generation — convert the layout to a building information model
+- Building-code compliance — automated checking against regulations
+- Cost estimation — material and construction cost prediction
+- Environmental performance — daylight, ventilation and energy analysis

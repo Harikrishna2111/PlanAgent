@@ -19,16 +19,16 @@
     {
       "name": "Bedroom 1",
       "room_type": "bedroom",
-      "min_width": 10,
+      "min_width": 12,
       "min_height": 12,
-      "preferred_area": 150
+      "preferred_area": 144
     },
     {
       "name": "Bedroom 2",
       "room_type": "bedroom",
-      "min_width": 10,
+      "min_width": 12,
       "min_height": 12,
-      "preferred_area": 150
+      "preferred_area": 144
     },
     {
       "name": "Bathroom 1",
@@ -61,8 +61,8 @@
   ],
   "relationships": [
     {
-      "room_a": "Dining",
-      "room_b": "Kitchen",
+      "room_a": "Kitchen",
+      "room_b": "Dining",
       "relationship": "near"
     },
     {
@@ -76,10 +76,20 @@
       "relationship": "near"
     },
     {
+      "room_a": "Bedroom 1",
+      "room_b": "Entrance",
+      "relationship": "away_from"
+    },
+    {
+      "room_a": "Bedroom 2",
+      "room_b": "Entrance",
+      "relationship": "away_from"
+    },
+    {
       "room_a": "Living Room",
       "room_b": "Entrance",
       "relationship": "connected_to"
     }
   ],
-  "raw_input": "Design a 2BHK house on a 40 \u00d7 60 ft plot with two bedrooms, two bathrooms, kitchen, living room and dining area. The kitchen should be near the dining area, bedrooms should be close to bathrooms, and the entrance should connect to the living room."
+  "raw_input": "Design a 2BHK house on a 40 x 60 ft plot with two bedrooms, two bathrooms, kitchen, living room and dining area."
 }

@@ -86,7 +86,7 @@ def run_pipeline_api():
         nl_input = data.get("input", "").strip()
         num_candidates = int(data.get("candidates", 5))
         iterations = int(data.get("iterations", 300))
-        backend = data.get("backend", "rules")
+        backend = data.get("backend", "llm")
         max_rounds = int(data.get("max_rounds", 3))
 
         # API key is always read from the server's .env / environment variable
@@ -95,7 +95,8 @@ def run_pipeline_api():
         if not nl_input:
             return jsonify({"error": "Please provide an architectural brief."}), 400
 
-        needs_key = backend in ("llm", "agentic")
+        # "llm" falls back to the rule-based parser when no key is configured
+        needs_key = backend == "agentic"
         if needs_key and not api_key:
             return jsonify({"error": "Gemini API key not found. Please set GEMINI_API_KEY in your .env file."}), 400
 
@@ -121,7 +122,7 @@ def run_pipeline_api():
             "relationships": [r.to_dict() for r in requirements.relationships],
         }
 
-        # ── Step 2: Spatial Graph ──────────────────────────────────────────
+        # ── Step 2: Spatial Planning Agent ────────────────────────────────
         graph = build_spatial_graph(requirements)
         results["graph_summary"] = graph_summary(graph)
 
@@ -134,12 +135,12 @@ def run_pipeline_api():
                 text.set_color("white")
         results["spatial_graph_img"] = _fig_to_base64(fig)
 
-        # ── Step 3: Floor-Plan Generation ─────────────────────────────────
+        # ── Step 3: Floor-Plan Generation Model ───────────────────────────
         candidates = generate_floor_plans(
             requirements, num_candidates=num_candidates, seed=42
         )
 
-        # ── Step 4: Spatial Critic ────────────────────────────────────────
+        # ── Step 4: Spatial Critic Agent ──────────────────────────────────
         critic = SpatialCritic()
         evaluations = []
         for plan in candidates:

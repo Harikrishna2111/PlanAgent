@@ -2,8 +2,8 @@
 End-to-End Pipeline — Agentic AI Framework for Constraint-Aware Architectural Design.
 
 Orchestrates the complete flow:
-  NL Input → Requirement Agent → Spatial Graph → Floor-Plan Generator
-  → Spatial Critic → Optimization Agent → Visualization
+  NL Input → Requirement Agent → Spatial Planning Agent → Floor-Plan Generation
+  Model → Spatial Critic Agent → Optimization Agent → Visualization
 
 Usage:
   python run_pipeline.py
